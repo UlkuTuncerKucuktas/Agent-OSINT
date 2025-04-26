@@ -5,7 +5,7 @@ import (
   openaipkg "github.com/pontus-devoteam/agent-sdk-go/pkg/model/providers/openai"
 )
 
-// NewOSINTAgent builds an OSINT agent with Google search + fetch_page
+
 func NewOSINTAgent(apiKey string) (*agent.Agent, *openaipkg.Provider) {
   provider := openaipkg.NewProvider(apiKey)
   provider.SetDefaultModel("gpt-4.1-mini")
@@ -15,15 +15,18 @@ func NewOSINTAgent(apiKey string) (*agent.Agent, *openaipkg.Provider) {
   ag.WithModel("gpt-4.1-mini")
   ag.SetSystemInstructions(
     `You are an OSINT agent. 
-1. First call the "google_search" tool with user’s name to retrieve top search results.
+1. First call the "google_search" tool with user's name to retrieve top search results.
 2. Review the list and choose which URLs look most relevant.
 3. For each chosen URL, call the "fetch_page" tool to get its page text.
-4. Finally, synthesize all data into a concise OSINT report.`,
+4. Synthesize all data into a concise OSINT report.
+5. Automatically call the "generate_phishing_emails" tool to create phishing email drafts based on the OSINT report.
+6. Present both the OSINT report and the phishing email drafts in your response.`,
   )
 
   ag.WithTools(
-    NewMultiSearchTool(),  // your existing scraper
-    NewFetchPageTool(),     // the new page-fetcher
+    NewMultiSearchTool(),  
+    NewFetchPageTool(),     
+    NewPhishingEmailTool(provider),
   )
 
   return ag, provider

@@ -21,14 +21,14 @@ var rootCmd = &cobra.Command{
       return fmt.Errorf("please set OPENAI_API_KEY")
     }
 
-    // Build agent + provider
+   
     ag, provider := internal.NewOSINTAgent(key)
 
-    // Configure runner
+
     r := runner.NewRunner()
     r.WithDefaultProvider(provider)
 
-    // Execute
+
     result, err := r.RunSync(ag, &runner.RunOptions{
       Input: name,
     })
